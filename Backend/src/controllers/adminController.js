@@ -74,31 +74,35 @@ export const updateCollege =
         }
 
     };
-
-export const updateCollege =
+export const deleteCollege =
     async (req, res) => {
 
         try {
 
             const college =
-                await College.findByIdAndUpdate(
-
-                    req.params.id,
-
-                    req.body,
-
-                    {
-                        new: true,
-                        runValidators: true
-                    }
-
+                await College.findByIdAndDelete(
+                    req.params.id
                 );
 
-            return res.json({
+            if (!college) {
+
+                return res.status(404).json({
+
+                    success: false,
+
+                    message:
+                        "College not found"
+
+                });
+
+            }
+
+            return res.status(200).json({
 
                 success: true,
 
-                data: college
+                message:
+                    "College deleted successfully"
 
             });
 
@@ -115,4 +119,11 @@ export const updateCollege =
 
         }
 
+    };
+
+
+    export default {
+    createCollege,
+    updateCollege,
+    deleteCollege
     };

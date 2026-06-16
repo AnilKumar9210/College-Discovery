@@ -22,7 +22,7 @@ const SavedColleges = () => {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {savedColleges.map((college) => (
                 <CollegeCard
-                  key={college.id}
+                  key={college._id}
                   college={college}
                 />
               ))}

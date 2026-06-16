@@ -1,9 +1,22 @@
 import { Search } from "lucide-react";
 
-const SearchBar = () => {
+const SearchBar = ({
+  search,
+  setSearch,
+}) => {
   return (
-    <div className="bg-white shadow-sm border border-slate-200 rounded-2xl p-2 flex items-center">
-
+    <div
+      className="
+        bg-white
+        shadow-sm
+        border
+        border-slate-200
+        rounded-2xl
+        p-2
+        flex
+        items-center
+      "
+    >
       <Search
         className="text-slate-400 ml-3"
         size={20}
@@ -11,7 +24,11 @@ const SearchBar = () => {
 
       <input
         type="text"
-        placeholder="Search colleges, courses, cities..."
+        value={search}
+        onChange={(e) =>
+          setSearch(e.target.value)
+        }
+        placeholder="Search colleges, cities, states..."
         className="
           flex-1
           px-4
@@ -34,7 +51,6 @@ const SearchBar = () => {
       >
         Search
       </button>
-
     </div>
   );
 };

@@ -1,4 +1,11 @@
-const CollegeFilters = () => {
+const CollegeFilters = ({ filters, setFilters }) => {
+  const handleChange = (e) => {
+    setFilters({
+      ...filters,
+      [e.target.name]: e.target.value,
+    });
+  };
+
   return (
     <div
       className="
@@ -11,48 +18,99 @@ const CollegeFilters = () => {
         top-24
       "
     >
-      <h2 className="text-xl font-semibold mb-6">
-        Filters
-      </h2>
+      <h2 className="text-xl font-semibold mb-6">Filters</h2>
 
       <div className="space-y-5">
+        {/* Location */}
 
         <div>
-          <label className="font-medium block mb-2">
-            State
-          </label>
+          <label className="font-medium block mb-2">Location</label>
 
-          <select className="w-full border rounded-xl p-3">
-            <option>All States</option>
-            <option>Telangana</option>
-            <option>Maharashtra</option>
+          <input
+            type="text"
+            name="location"
+            value={filters.location}
+            onChange={handleChange}
+            placeholder="Mumbai, Delhi..."
+            className="
+              w-full
+              border
+              rounded-xl
+              p-3
+              outline-none
+              focus:ring-2
+              focus:ring-blue-500
+            "
+          />
+        </div>
+
+        {/* Minimum Rating */}
+
+        <div>
+          <label className="font-medium block mb-2">Minimum Rating</label>
+
+          <select
+            name="minRating"
+            value={filters.minRating}
+            onChange={handleChange}
+            className="w-full border rounded-xl p-3"
+          >
+            <option value="">Any Rating</option>
+
+            <option value="4">4+</option>
+
+            <option value="4.5">4.5+</option>
+
+            <option value="4.8">4.8+</option>
           </select>
         </div>
 
-        <div>
-          <label className="font-medium block mb-2">
-            Course
-          </label>
+        {/* Fee Range */}
 
-          <select className="w-full border rounded-xl p-3">
-            <option>All Courses</option>
-            <option>B.Tech</option>
-            <option>MBA</option>
+        <div>
+          <label className="font-medium block mb-2">Maximum Fees</label>
+
+          <select
+            name="maxFees"
+            value={filters.maxFees}
+            onChange={handleChange}
+            className="w-full border rounded-xl p-3"
+          >
+            <option value="">Any Fees</option>
+
+            <option value="100000">Below ₹1 Lakh</option>
+
+            <option value="300000">Below ₹3 Lakhs</option>
+
+            <option value="500000">Below ₹5 Lakhs</option>
+
+            <option value="1000000">Below ₹10 Lakhs</option>
           </select>
         </div>
 
-        <div>
-          <label className="font-medium block mb-2">
-            Fees
-          </label>
+        {/* Reset */}
 
-          <select className="w-full border rounded-xl p-3">
-            <option>All Fees</option>
-            <option>Below ₹1L</option>
-            <option>₹1L - ₹3L</option>
-          </select>
-        </div>
-
+        <button
+          onClick={() =>
+            setFilters({
+              location: "",
+              minFees: "",
+              maxFees: "",
+              minRating: "",
+            })
+          }
+          className="
+            w-full
+            bg-slate-100
+            hover:bg-slate-200
+            py-3
+            rounded-xl
+            font-medium
+            transition
+          "
+        >
+          Reset Filters
+        </button>
       </div>
     </div>
   );

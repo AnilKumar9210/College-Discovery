@@ -1,47 +1,92 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
-const SavedCollegesContext = createContext();
+import api from "../services/api";
+import { useAuth } from "./AuthContext";
 
-export const SavedCollegesProvider = ({ children }) => {
-  const [savedColleges, setSavedColleges] = useState([]);
+const SavedCollegesContext =
+  createContext();
+
+export const SavedCollegesProvider = ({
+  children,
+}) => {
+  const { user } = useAuth();
+
+  const [
+    savedColleges,
+    setSavedColleges,
+  ] = useState([]);
 
   useEffect(() => {
-    const stored = localStorage.getItem("savedColleges");
-
-    if (stored) {
-      setSavedColleges(JSON.parse(stored));
+    if (user?.token) {
+      fetchSavedColleges();
+    } else {
+      setSavedColleges([]);
     }
-  }, []);
+  }, [user]);
 
-  const saveCollege = (college) => {
-    const exists = savedColleges.find(
-      (item) => item.id === college.id
-    );
+  const fetchSavedColleges =
+    async () => {
+      try {
+        const response =
+          await api.get(
+            "/auth/me",
+            {
+              headers: {
+                Authorization: `Bearer ${user.token}`,
+              },
+            }
+          );
 
-    if (exists) return;
+        setSavedColleges(
+          response.data.data
+            .savedColleges || []
+        );
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
-    const updated = [...savedColleges, college];
+  const saveCollege =
+    async (collegeId) => {
+      try {
+        await api.post(
+          `/auth/save-college/${collegeId}`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
+        );
 
-    setSavedColleges(updated);
+        fetchSavedColleges();
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
-    localStorage.setItem(
-      "savedColleges",
-      JSON.stringify(updated)
-    );
-  };
+  const removeCollege =
+    async (collegeId) => {
+      try {
+        await api.delete(
+          `/auth/save-college/${collegeId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
+        );
 
-  const removeCollege = (id) => {
-    const updated = savedColleges.filter(
-      (college) => college.id !== id
-    );
-
-    setSavedColleges(updated);
-
-    localStorage.setItem(
-      "savedColleges",
-      JSON.stringify(updated)
-    );
-  };
+        fetchSavedColleges();
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
   return (
     <SavedCollegesContext.Provider
@@ -56,5 +101,8 @@ export const SavedCollegesProvider = ({ children }) => {
   );
 };
 
-export const useSavedColleges = () =>
-  useContext(SavedCollegesContext);
+export const useSavedColleges =
+  () =>
+    useContext(
+      SavedCollegesContext
+    );

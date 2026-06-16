@@ -43,10 +43,10 @@ const Navbar = () => {
               Compare
             </Link>
             <Link
-              to="/saved-colleges"
+              to="/dashboard"
               className="text-slate-700 hover:text-blue-600"
             >
-              Saved
+              Dashboard
             </Link>
           </nav>
 

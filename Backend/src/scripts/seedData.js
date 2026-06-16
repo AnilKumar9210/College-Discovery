@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import connectDB from "../config/db.js";
 
 import College from "../models/College.js";
-import Question from "../models/Question.js";
+import Question from "../models/Questions.js"
 
 dotenv.config();
 
