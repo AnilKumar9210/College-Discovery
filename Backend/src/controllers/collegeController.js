@@ -73,6 +73,15 @@ export const getColleges = async (req, res) => {
                     rating: -1
                 });
 
+                await College.find().select("name")
+
+        console.log({
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit),
+        });
+
         return res.status(200).json({
             success: true,
             data: colleges,

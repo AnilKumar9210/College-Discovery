@@ -1,5 +1,7 @@
 import MainLayout from "../../layouts/MainLayout";
 import { useSavedColleges } from "../../Context/SavedCollegesContext";
+import CollegeCard from "../Colleges/CollegeCard";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
   const { savedColleges } = useSavedColleges();
@@ -50,7 +52,50 @@ const Dashboard = () => {
 
         </div>
 
+        <div className="mt-12">
+
+  <div className="flex justify-between items-center mb-6">
+
+    <h2 className="text-2xl font-bold">
+      Saved Colleges
+    </h2>
+
+    <Link
+      to="/saved-colleges"
+      className="text-blue-600 font-medium"
+    >
+      View All →
+    </Link>
+
+  </div>
+
+  {savedColleges.length === 0 ? (
+
+    <div className="bg-white rounded-2xl p-8 text-center">
+      No saved colleges yet.
+    </div>
+
+  ) : (
+
+    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      {savedColleges
+        .slice(0, 3)
+        .map((college) => (
+          <CollegeCard
+            key={college._id}
+            college={college}
+          />
+        ))}
+
+    </div>
+
+  )}
+
+</div>
+
       </section>
+      
     </MainLayout>
   );
 };

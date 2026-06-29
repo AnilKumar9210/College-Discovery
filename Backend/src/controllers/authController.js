@@ -1,6 +1,7 @@
 import User from "../models/Users.js";
 import College from "../models/College.js";
 import generateToken from "../utils/generateToken.js";
+import sendEmail from "../utils/sendEmail.js";
 
 export const signup = async (req, res) => {
 
@@ -38,6 +39,7 @@ export const signup = async (req, res) => {
                 _id: user._id,
                 name: user.name,
                 email: user.email,
+                role:user.role,
                 token: generateToken(user._id)
             }
         });
@@ -73,6 +75,7 @@ export const signin = async (req, res) => {
                     _id: user._id,
                     name: user.name,
                     email: user.email,
+                    role:user.role,
                     token: generateToken(user._id)
                 }
             });
@@ -234,3 +237,192 @@ export const saveComparison = async (req, res) => {
     }
 
 };
+
+export const forgotPassword =
+  async (req, res) => {
+    try {
+
+      const { email } = req.body;
+
+      const user =
+        await User.findOne({
+          email,
+        });
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message:
+            "User not found",
+        });
+      }
+
+      const resetToken =
+        crypto
+          .randomBytes(32)
+          .toString("hex");
+
+      user.resetPasswordToken =
+        resetToken;
+
+      user.resetPasswordExpire =
+        Date.now() +
+        15 * 60 * 1000;
+
+      await user.save();
+
+      const resetUrl =
+        `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+
+      await sendEmail(
+        user.email,
+        "Password Reset",
+        `
+        <h2>Password Reset</h2>
+        <p>Click below:</p>
+        <a href="${resetUrl}">
+          Reset Password
+        </a>
+        `
+      );
+
+      return res.json({
+        success: true,
+        message:
+          "Reset link sent",
+      });
+
+    } catch (error) {
+
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+
+    }
+  };
+
+  export const resetPassword =
+  async (req, res) => {
+    try {
+
+      const { token } =
+        req.params;
+
+      const { password } =
+        req.body;
+
+      const user =
+        await User.findOne({
+          resetPasswordToken:
+            token,
+          resetPasswordExpire:
+            {
+              $gt: Date.now(),
+            },
+        });
+
+      if (!user) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Invalid or expired token",
+        });
+      }
+
+      user.password =
+        password;
+
+      user.resetPasswordToken =
+        undefined;
+
+      user.resetPasswordExpire =
+        undefined;
+
+      await user.save();
+
+      return res.json({
+        success: true,
+        message:
+          "Password updated successfully",
+      });
+
+    } catch (error) {
+
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+
+    }
+  };
+
+
+  export const becomeAdmin =
+  async (req, res) => {
+
+    try {
+
+      const { secretCode } =
+        req.body;
+
+      if (
+        !secretCode
+      ) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Secret code is required",
+        });
+      }
+
+      if (
+        secretCode !==
+        process.env.ADMIN_SECRET
+      ) {
+        return res.status(403).json({
+          success: false,
+          message:
+            "Invalid admin code",
+        });
+      }
+
+      const user =
+        await User.findById(
+          req.userId
+        );
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message:
+            "User not found",
+        });
+      }
+
+      user.role =
+        "admin";
+
+      await user.save();
+
+      return res.status(200).json({
+        success: true,
+        message:
+          "Admin access granted",
+        data: {
+          role:
+            user.role,
+        },
+      });
+
+    } catch (error) {
+
+      return res.status(500).json({
+        success: false,
+        message:
+          error.message,
+      });
+
+    }
+
+  };

@@ -9,10 +9,10 @@ import admin
 import {
 
     createCollege,
-
     updateCollege,
-
-    deleteCollege
+    deleteCollege,
+    getDashboardStats,
+    getAllColleges
 
 }
     from "../controllers/adminController.js";
@@ -21,24 +21,39 @@ const router =
     express.Router();
 
 router.post(
-    "/colleges",
+    "/admin/colleges",
     protect,
     admin,
     createCollege
 );
 
 router.put(
-    "/colleges/:id",
+    "/admin/colleges/:id",
     protect,
     admin,
     updateCollege
 );
 
 router.delete(
-    "/colleges/:id",
+    "/admin/colleges/:id",
     protect,
     admin,
     deleteCollege
+);
+
+router.get(
+    "/admin/stats",
+    protect,
+    admin,
+    getDashboardStats
+);
+
+
+router.get (
+    "/admin/colleges",
+    protect,
+    admin,
+    getAllColleges
 );
 
 export default router;

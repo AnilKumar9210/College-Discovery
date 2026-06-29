@@ -1,1 +1,16 @@
+GET  http://localhost:5000/api/admin/stats
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhM2NmMjI2MWNkYzk4MmZiNTI4NDUzZCIsImlhdCI6MTc4MjQ2MDE1NCwiZXhwIjoxNzg1MDUyMTU0fQ.MREYGhKwWEU1rJ09xFS-ELAUeZj1qwrPKg8TWC9VQwA
+Content-Type: application/json
 
+
+# {
+#     "secretCode":"COLLEGE_DISCOVERY_2026"
+# }
+
+# {
+#   "message":"Suggest colleges for JEE rank 15000"
+# }
+
+# "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMzRiYjExY2Y4MmI3NTUzNjlkNGMzMSIsImlhdCI6MTc4MTg0MjI0MywiZXhwIjoxNzg0NDM0MjQzfQ.s6f1gsItC4Y3qk0GhxVBsPbxGwyK9HYMz-Rusrnajdo"
+
+# GET http://localhost:5000/api/admin/stats

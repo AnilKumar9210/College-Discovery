@@ -1,20 +1,15 @@
 import express from "express";
 
-import protect
-    from "../middleware/authMiddleware.js";
-
 import {
-    compareCollegesAI
-}
-    from "../controllers/aiComparisonController.js";
+  compareColleges,
+} from "../controllers/aiComparisonController.js";
 
 const router =
-    express.Router();
+  express.Router();
 
 router.post(
-    "/",
-    protect,
-    compareCollegesAI
+  "/",
+  compareColleges
 );
 
 export default router;

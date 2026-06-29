@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 import {
   QueryClient,
@@ -9,6 +10,7 @@ import {
 
 import { AuthProvider } from "./Context/AuthContext";
 import { SavedCollegesProvider } from "./Context/SavedCollegesContext";
+import { CompareProvider } from "./Context/CompareContext";
 
 import App from "./App";
 import "./index.css";
@@ -31,11 +33,14 @@ ReactDOM.createRoot(
       client={queryClient}
     >
       <BrowserRouter>
+      <CompareProvider>
         <AuthProvider>
           <SavedCollegesProvider>
             <App />
+            <Toaster position="top-right" toastOptions={{duration:3000,}} />
           </SavedCollegesProvider>
         </AuthProvider>
+        </CompareProvider>
       </BrowserRouter>
     </QueryClientProvider>
   </React.StrictMode>

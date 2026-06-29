@@ -1,113 +1,128 @@
+import groq from "../config/groq.js";
 import College from "../models/College.js";
-import { getAIResponse }
-    from "../services/geminiService.js";
 
-export const compareCollegesAI =
-    async (req, res) => {
+export const compareColleges = async (
+  req,
+  res
+) => {
 
-        try {
+    const collegeList = await College.find().select ("name");
 
-            const { collegeIds } =
-                req.body;
+    // console.log (collegeList);
 
-            if (
-                !collegeIds ||
-                collegeIds.length < 2
-            ) {
+    console.log (req.body)
 
-                return res.status(400).json({
+  try {
 
-                    success: false,
+    const {
+      college1,
+      college2,
+    } = req.body;
 
-                    message:
-                        "Minimum 2 colleges required"
+    const firstCollege =
+  await College.findOne({
+    name: {
+      $regex: college1,
+      $options: "i",
+    },
+  });
 
-                });
+const secondCollege =
+  await College.findOne({
+    name: {
+      $regex: college2,
+      $options: "i",
+    },
+  });
 
-            }
+  console.log(
+  "College 1:",
+  firstCollege?.name
+);
 
-            const colleges =
-                await College.find({
+console.log(
+  "College 2:",
+  secondCollege?.name
+);
 
-                    _id: {
-                        $in: collegeIds
-                    }
+    if (
+      !firstCollege ||
+      !secondCollege
+    ) {
+      return res.status(404).json({
+        success: false,
+        message:
+          "College not found",
+      });
+    }
 
-                });
+    const completion =
+      await groq.chat.completions.create(
+        {
+          model:
+            "llama-3.1-8b-instant",
 
-            if (
-                colleges.length < 2
-            ) {
+          messages: [
+            {
+              role:
+                "system",
 
-                return res.status(404).json({
-
-                    success: false,
-
-                    message:
-                        "Colleges not found"
-
-                });
-
-            }
-
-            const prompt = `
-
-You are an expert college counselor.
-
+              content: `
 Compare the following colleges.
 
-Focus on:
+College 1:
+Name: ${firstCollege.name}
+State: ${firstCollege.state}
+Fees: ${firstCollege.fees}
+Rating: ${firstCollege.rating}
+NIRF Rank: ${firstCollege.nirfRank}
+Average Package: ${firstCollege.placements?.averagePackage}
+Highest Package: ${firstCollege.placements?.highestPackage}
 
-1. Academic Reputation
-2. Fees
-3. Placements
+College 2:
+Name: ${secondCollege.name}
+State: ${secondCollege.state}
+Fees: ${secondCollege.fees}
+Rating: ${secondCollege.rating}
+NIRF Rank: ${secondCollege.nirfRank}
+Average Package: ${secondCollege.placements?.averagePackage}
+Highest Package: ${secondCollege.placements?.highestPackage}
+
+Compare:
+1. Academics
+2. Placements
+3. Fees
 4. ROI
-5. Campus Life
-6. Top Courses
-7. Which students should choose which college
-
-College Data:
-
-${JSON.stringify(
-                colleges,
-                null,
-                2
-            )}
-
-Provide:
-
-Pros
-Cons
-Winner
-Final Recommendation
-
-`;
-
-            const response =
-                await getAIResponse(
-                    prompt
-                );
-
-            return res.status(200).json({
-
-                success: true,
-
-                comparison:
-                    response
-
-            });
-
+5. Campus
+6. Final Verdict
+`,
+            },
+          ],
         }
-        catch (error) {
+      );
 
-            return res.status(500).json({
+    return res.json({
+      success: true,
+      comparison:
+        completion.choices[0]
+          .message.content,
 
-                success: false,
+      colleges: [
+        firstCollege,
+        secondCollege,
+      ],
+    });
 
-                message: error.message
+  } catch (error) {
 
-            });
+    console.log(error);
 
-        }
+    return res.status(500).json({
+      success: false,
+      message:
+        error.message,
+    });
 
-    };
+  }
+
+};

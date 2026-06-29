@@ -1,57 +1,77 @@
 import jwt from "jsonwebtoken";
 import User from "../models/Users.js";
+import dotenv from "dotenv";
 
-const protect = async (req, res, next) => {
+dotenv.config();
 
-    try {
+const protect = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    console.log("Protect middleware called",process.env.JWT_SECRET);
 
-        console.log("protect hit")
-        let token;
+    let token;
 
-        req.userId =
-            user._id;
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith(
+        "Bearer"
+      )
+    ) {
 
-        req.user =
-            user;
+      token =
+        req.headers.authorization.split(
+          " "
+        )[1];
 
-        if (
-            req.headers.authorization &&
-            req.headers.authorization.startsWith("Bearer")
-        ) {
+      const decoded =
+        jwt.verify(
+          token,
+          process.env.JWT_SECRET
+        );
 
-            token = req.headers.authorization.split(" ")[1];
+      const user =
+        await User.findById(
+          decoded.id
+        ).select("-password");
 
-            const decoded =
-                jwt.verify(
-                    token,
-                    process.env.JWT_SECRET
-                );
-
-            req.user =
-                await User.findById(decoded.id)
-                    .select("-password");
-
-            next();
-
-        }
-
-        else {
-
-            return res.status(401).json({
-                message: "Not authorized"
-            });
-
-        }
-
-    }
-    catch (error) {
-
+      if (!user) {
         return res.status(401).json({
-            message: "Token invalid"
+          success: false,
+          message:
+            "User not found",
         });
+      }
+
+      req.user = user;
+
+      req.userId = user._id;
+
+      next();
+
+    } else {
+
+      return res.status(401).json({
+        success: false,
+        message:
+          "Not authorized, no token",
+      });
 
     }
 
+  } catch (error) {
+
+    console.log(error);
+
+    return res.status(401).json({
+      success: false,
+      message:
+        "Token invalid",
+    });
+
+  }
 };
 
 export default protect;

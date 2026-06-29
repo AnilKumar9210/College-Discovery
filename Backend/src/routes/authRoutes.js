@@ -6,7 +6,10 @@ import {
     getMe,
     saveCollege,
     unsaveCollege,
-    saveComparison
+    saveComparison,
+    resetPassword,
+    forgotPassword,
+    becomeAdmin
 }
 from "../controllers/authController.js";
 
@@ -37,5 +40,20 @@ router.post(
     protect,
     saveComparison
 );
+router.post(
+  "/forgot-password",
+  forgotPassword
+);
+
+router.post(
+  "/reset-password/:token",
+  resetPassword
+);
+
+router.post (
+    '/become-admin',
+    protect,
+    becomeAdmin
+)
 
 export default router;

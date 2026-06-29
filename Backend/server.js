@@ -16,17 +16,23 @@ import dashboardRoutes from "./src/routes/dashboardRoutes.js";
 
 import errorHandler from "./src/middleware/errorHandler.js";
 
-import chatRoutes
-    from "./src/routes/chatRoutes.js";
 
 import profileRoutes
     from "./src/routes/profileRoutes.js";
 
-import aiComparisonRoutes
-    from "./src/routes/aiComparisonRoutes.js";
 
 import adminRoutes
     from "./src/routes/adminRoutes.js";
+
+import sendEmail from "./src/utils/sendEmail.js";
+
+import aiChatRoutes from "./src/routes/aiChatRoutes.js"
+
+import aiComparisonRoutes from "./src/routes/aiComparisonRoutes.js";
+
+import chatHistoryRoutes from "./src/routes/chatHistoryRoutes.js";
+
+
 
 dotenv.config();
 
@@ -93,12 +99,66 @@ app.use(
     dashboardRoutes
 );
 
+
 app.use(
-    "/api/chat",
-    chatRoutes
+    "/api/ai-chat",
+    aiChatRoutes
 );
 
+app.use (
+    "/api/ai-compare",
+    aiComparisonRoutes
+);
+
+
+//chat history routes
+
+app.use ('/api/chats',chatHistoryRoutes);
+
+
+app.get("/test-email", async (req, res) => {
+  try {
+    const response = await sendEmail(
+      "your_email@gmail.com", // replace with your email
+      "College Discovery Test",
+      "<h1>Email Working 🚀</h1>"
+    );
+
+    res.status(200).json({
+      success: true,
+      response,
+    });
+
+  } catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+
+  }
+});
+
 /* 404 Handler */
+
+
+app.use(
+    "/api/profile",
+    profileRoutes
+);
+
+
+
+app.use(
+    "/api/admin",
+    adminRoutes
+);
+
+
+// recommendation routes 
+
 app.use((req, res) => {
 
     res.status(404).json({
@@ -107,24 +167,10 @@ app.use((req, res) => {
     });
 
 });
-
-app.use(
-    "/api/profile",
-    profileRoutes
-);
-
-app.use(
-    "/api/compare/ai",
-    aiComparisonRoutes
-);
-
-app.use(
-    "/api/admin",
-    adminRoutes
-);
-
 /* Global Error Handler */
 app.use(errorHandler);
+
+
 
 const PORT =
     process.env.PORT || 5000;

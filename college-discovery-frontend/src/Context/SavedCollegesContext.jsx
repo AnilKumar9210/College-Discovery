@@ -53,6 +53,7 @@ export const SavedCollegesProvider = ({
 
   const saveCollege =
     async (collegeId) => {
+        console.log (user.token,user)
       try {
         await api.post(
           `/auth/save-college/${collegeId}`,

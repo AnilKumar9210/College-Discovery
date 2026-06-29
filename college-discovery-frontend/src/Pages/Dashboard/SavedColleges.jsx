@@ -1,9 +1,12 @@
+import { useProfile } from "../../hooks/useProfile";
 import MainLayout from "../../layouts/MainLayout";
 import CollegeCard from "../Colleges/CollegeCard";
-import { useSavedColleges } from "../../Context/SavedCollegesContext";
 
 const SavedColleges = () => {
-  const { savedColleges } = useSavedColleges();
+
+  const {data:user,isLoading} = useProfile ();
+
+  const savedColleges = user?.savedColleges || [];
 
   return (
     <MainLayout>

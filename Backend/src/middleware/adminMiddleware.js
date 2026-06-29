@@ -1,17 +1,19 @@
-export const admin =
-    (req, res, next) => {
+export const adminOnly =
+  (req, res, next) => {
 
-        if (
-            req.user &&
-            req.user.role === "admin"
-        ) {
-            return next();
-        }
+    if (
+      req.user.role !==
+      "admin"
+    ) {
+      return res.status(403).json({
+        success: false,
+        message:
+          "Admin only",
+      });
+    }
 
-        return res.status(403).json({
-            message: "Admin only"
-        });
+    next();
 
-    };
+};
 
-    export default admin;
+export default adminOnly;

@@ -1,4 +1,6 @@
 import College from "../models/College.js";
+import Chat from "../models/Chat.js";
+import User from "../models/Users.js"
 
 export const createCollege =
     async (req, res) => {
@@ -121,9 +123,99 @@ export const deleteCollege =
 
     };
 
+export const getDashboardStats =
+    async (req, res) => {
+        try {
 
-    export default {
+            const users =
+                await User.countDocuments();
+
+            const colleges =
+                await College.countDocuments();
+
+            const chats =
+                await Chat.countDocuments();
+
+            const savedColleges =
+                await User.aggregate([
+                    {
+                        $project: {
+                            totalSaved: {
+                                $size: "$savedColleges",
+                            },
+                        },
+                    },
+                    {
+                        $group: {
+                            _id: null,
+                            total: {
+                                $sum: "$totalSaved",
+                            },
+                        },
+                    },
+                ]);
+
+            return res.status(200).json({
+                success: true,
+
+                data: {
+                    users,
+                    colleges,
+                    chats,
+
+                    savedColleges:
+                        savedColleges[0]
+                            ?.total || 0,
+                },
+            });
+
+        } catch (error) {
+
+            console.log(error);
+
+            return res.status(500).json({
+                success: false,
+                message:
+                    error.message,
+            });
+
+        }
+    };
+
+
+    export const getAllColleges =
+  async (req, res) => {
+
+    try {
+
+      const colleges =
+        await College.find()
+          .sort({
+            createdAt: -1,
+          });
+
+      return res.json({
+        success: true,
+        data: colleges,
+      });
+
+    } catch (error) {
+
+      return res.status(500).json({
+        success: false,
+        message:
+          error.message,
+      });
+
+    }
+
+  };
+
+
+export default {
     createCollege,
     updateCollege,
-    deleteCollege
-    };
+    deleteCollege,
+    getDashboardStats,
+    getAllColleges
+};

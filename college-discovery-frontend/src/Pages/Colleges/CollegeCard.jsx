@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 
 import { useSavedColleges } from "../../Context/SavedCollegesContext";
+import { useCompare } from "../../Context/CompareContext";
 
 const CollegeCard = ({ college }) => {
   const {
@@ -25,9 +26,22 @@ const CollegeCard = ({ college }) => {
     if (isSaved) {
       removeCollege(college._id);
     } else {
-      saveCollege(college);
+      saveCollege(college._id);
     }
   };
+
+
+  const {
+    addCollege,
+    compareColleges
+  } = useCompare ();
+
+
+  const isCompared =
+  compareColleges.some(
+    (item) =>
+      item._id === college._id
+  );
 
   return (
     <div
@@ -122,26 +136,49 @@ const CollegeCard = ({ college }) => {
 
           <div className="text-green-600 font-medium">
             Avg Package ₹
-            {college.placements?.averagePackage?.toLocaleString() || "N/A"}
+            {college.placements?.averagePackage?.toLocaleString() || "N/A"} LPA
           </div>
         </div>
 
-        <Link
-          to={`/college/${college._id}`}
-          className="
-            block
-            mt-5
-            text-center
-            bg-blue-600
-            hover:bg-blue-700
-            text-white
-            py-3
-            rounded-xl
-            transition
-          "
-        >
-          View Details
-        </Link>
+        <div className="flex gap-2 mt-5">
+
+  <Link
+    to={`/college/${college._id}`}
+    className="
+      flex-1
+      text-center
+      bg-blue-600
+      hover:bg-blue-700
+      text-white
+      py-3
+      rounded-xl
+    "
+  >
+    View Details
+  </Link>
+
+  <button
+  onClick={() =>
+    addCollege(college)
+  }
+  disabled={isCompared}
+  className={`
+    px-4
+    rounded-xl
+    transition
+    ${
+      isCompared
+        ? "bg-green-500 text-white cursor-not-allowed"
+        : "bg-slate-100 hover:bg-slate-200"
+    }
+  `}
+>
+  {isCompared
+    ? "✓ Added"
+    : "Compare"}
+</button>
+
+</div>
       </div>
     </div>
   );

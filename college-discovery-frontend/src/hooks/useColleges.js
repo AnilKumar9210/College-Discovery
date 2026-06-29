@@ -29,7 +29,9 @@ export const useColleges = (
   search,
   filters
 ) => {
+
   return useQuery({
+
     queryKey: [
       "colleges",
       page,
@@ -37,10 +39,31 @@ export const useColleges = (
       filters,
     ],
 
-    queryFn: fetchColleges,
+    queryFn: async () => {
 
-    staleTime: 1000 * 60 * 5,
+      const response =
+        await api.get(
+          "/colleges",
+          {
+            params: {
+              page,
+              limit: 12,
+              search,
+              ...filters,
+            },
+          }
+        );
 
-    gcTime: 1000 * 60 * 10,
+      return response.data;
+
+    },
+
+    staleTime:
+      1000 * 60 * 5,
+
+    gcTime:
+      1000 * 60 * 10,
+
   });
+
 };

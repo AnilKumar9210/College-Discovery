@@ -1,76 +1,183 @@
-import { useState } from "react";
 import MainLayout from "../../layouts/MainLayout";
-import colleges from "../../data/colleges";
-import CompareTable from "../../components/compare/CompareTable";
+
+import {
+  useCompare,
+} from "../../Context/CompareContext";
 
 const Compare = () => {
-  const [collegeOneId, setCollegeOneId] = useState(1);
-  const [collegeTwoId, setCollegeTwoId] = useState(2);
 
-  const collegeOne = colleges.find(
-    (college) => college.id === Number(collegeOneId)
-  );
+  const {
+    compareColleges,
+    removeCollege,
+    clearComparison,
+  } = useCompare();
 
-  const collegeTwo = colleges.find(
-    (college) => college.id === Number(collegeTwoId)
-  );
+  if (
+    compareColleges.length === 0
+  ) {
+    return (
+      <MainLayout>
+        <div className="max-w-7xl mx-auto py-20">
 
-  return (
-    <MainLayout>
-      <section className="py-12">
-
-        <div className="max-w-7xl mx-auto px-4">
-
-          <h1 className="text-4xl font-bold mb-8">
+          <h1 className="text-4xl font-bold">
             Compare Colleges
           </h1>
 
-          <div className="grid md:grid-cols-2 gap-4 mb-10">
+          <p className="mt-4">
+            Select colleges to compare.
+          </p>
 
-            <select
-              value={collegeOneId}
-              onChange={(e) =>
-                setCollegeOneId(e.target.value)
-              }
-              className="border rounded-xl p-4"
-            >
-              {colleges.map((college) => (
-                <option
-                  key={college.id}
-                  value={college.id}
-                >
-                  {college.name}
-                </option>
-              ))}
-            </select>
+        </div>
+      </MainLayout>
+    );
+  }
 
-            <select
-              value={collegeTwoId}
-              onChange={(e) =>
-                setCollegeTwoId(e.target.value)
-              }
-              className="border rounded-xl p-4"
-            >
-              {colleges.map((college) => (
-                <option
-                  key={college.id}
-                  value={college.id}
-                >
-                  {college.name}
-                </option>
-              ))}
-            </select>
+  return (
+    <MainLayout>
 
-          </div>
+      <div className="max-w-7xl mx-auto py-12 px-4">
 
-          <CompareTable
-            collegeOne={collegeOne}
-            collegeTwo={collegeTwo}
-          />
+        <div className="flex justify-between mb-8">
+
+          <h1 className="text-4xl font-bold">
+            Compare Colleges
+          </h1>
+
+          <button
+            onClick={
+              clearComparison
+            }
+            className="
+              bg-red-500
+              text-white
+              px-4
+              py-2
+              rounded-lg
+            "
+          >
+            Clear All
+          </button>
 
         </div>
 
-      </section>
+        <div className="overflow-x-auto">
+
+          <table className="w-full bg-white rounded-xl">
+
+            <tbody>
+
+              <tr>
+                <td className="font-bold p-4">
+                  College
+                </td>
+
+                {compareColleges.map(
+                  (college) => (
+                    <td
+                      key={
+                        college._id
+                      }
+                      className="p-4"
+                    >
+                      {college.name}
+                    </td>
+                  )
+                )}
+              </tr>
+
+              <tr>
+                <td className="font-bold p-4">
+                  Rating
+                </td>
+
+                {compareColleges.map(
+                  (college) => (
+                    <td
+                      key={
+                        college._id
+                      }
+                      className="p-4"
+                    >
+                      {
+                        college.rating
+                      }
+                    </td>
+                  )
+                )}
+              </tr>
+
+              <tr>
+                <td className="font-bold p-4">
+                  Fees
+                </td>
+
+                {compareColleges.map(
+                  (college) => (
+                    <td
+                      key={
+                        college._id
+                      }
+                      className="p-4"
+                    >
+                      ₹
+                      {college.fees?.toLocaleString()}
+                    </td>
+                  )
+                )}
+              </tr>
+
+              <tr>
+                <td className="font-bold p-4">
+                  State
+                </td>
+
+                {compareColleges.map(
+                  (college) => (
+                    <td
+                      key={
+                        college._id
+                      }
+                      className="p-4"
+                    >
+                      {
+                        college.state
+                      }
+                    </td>
+                  )
+                )}
+              </tr>
+
+              <tr>
+                <td className="font-bold p-4">
+                  Avg Package
+                </td>
+
+                {compareColleges.map(
+                  (college) => (
+                    <td
+                      key={
+                        college._id
+                      }
+                      className="p-4"
+                    >
+                      ₹
+                      {college
+                        .placements
+                        ?.averagePackage
+                        ?.toLocaleString()}
+                    </td>
+                  )
+                )}
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
     </MainLayout>
   );
 };

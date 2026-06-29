@@ -88,7 +88,7 @@ const collegesData = collegeNames.map((name, index) => ({
 
   nirfRank: index + 1,
 
-  image: `https://picsum.photos/seed/${index}/800/600`,
+  image: `https://picsum.photos/800/600?random=${index}`,
 
   overview: `${name} is one of India's reputed institutions known for academics, placements, research, and student development.`,
 
